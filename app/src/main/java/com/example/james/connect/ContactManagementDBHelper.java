@@ -22,7 +22,10 @@ public class ContactManagementDBHelper extends SQLiteOpenHelper {
         final String SQL_CREATE_USER_TABLE = "CREATE TABLE " + User.TABLE_NAME + " (" +
                 User._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 User.COLUMN_USER_NAME + " TEXT NOT NULL," +
-                User.COLUMN_USER_NUMBER + " INTEGER NOT NULL);";
+                User.COLUMN_USER_NUMBER + " INTEGER NOT NULL);" +
+                "CREATE TABLE " + ReportedNumbers.TABLE_NAME + " (" +
+                ReportedNumbers._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                ReportedNumbers.COLUMN_REPORTED_NUMBER + " INTEGER NOT NULL);";
         db.execSQL(SQL_CREATE_USER_TABLE);
     }
 
