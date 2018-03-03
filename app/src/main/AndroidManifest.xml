@@ -3,11 +3,13 @@
     package="com.example.james.connect">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+
     <receiver android:name=".PhoneCallStateReceiver">
         <intent-filter>
-            <action android:name="android.intent.action.PHONE_STATE"/>
+            <action android:name="android.intent.action.PHONE_STATE" />
         </intent-filter>
     </receiver>
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -21,6 +23,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".CallScreenActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_call_screen"
+            android:theme="@style/FullscreenTheme"></activity>
     </application>
 
 </manifest>
