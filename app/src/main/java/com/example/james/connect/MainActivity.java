@@ -81,6 +81,9 @@ public class MainActivity extends AppCompatActivity {
             super.onCallStateChanged(state, incomingNumber);
             switch(state){
                 case TelephonyManager.CALL_STATE_OFFHOOK:
+                    //do what you want with incoming call number
+                    //insert the switch statement here
+                    //
                     Toast.makeText(MainActivity.this, "CALL_STATE_OFFHOOK", Toast.LENGTH_LONG).show();
                     break;
                 case TelephonyManager.CALL_STATE_IDLE:
