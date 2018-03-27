@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.example.james.connect.ContactManagementContract.*;
 
 /**
- * Created by james on 02/03/2018.
+ * Created by james on 02/03/2018. James will continue with this section.
  */
 
 public class ContactManagementDBHelper extends SQLiteOpenHelper {
