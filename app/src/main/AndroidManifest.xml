@@ -3,6 +3,7 @@
     package="com.example.james.connect">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
         android:allowBackup="true"
@@ -11,9 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <receiver android:name=".PhoneCallStateReceiver">
+        <receiver android:name="InterceptCall">
             <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>
         </receiver>
 

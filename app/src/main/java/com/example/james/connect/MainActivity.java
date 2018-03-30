@@ -18,6 +18,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 3;
+    private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 4;
     String telPhoneNo;
     EditText phoneField;
     private TelephonyManager myTelephonyManager;
@@ -36,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
                 makeCall();
             }
         });
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+        }
     }
 
     private void makeCall(){
@@ -62,11 +68,23 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_CALL_PHONE: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    makeCall();// Call the number in the text field
+                if (grantResults.length > 1
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this,"PERMISSION GRANTED", Toast.LENGTH_LONG).show();
+                    //makeCall();// Call the number in the text field
                 } else {
                     Toast.makeText(MainActivity.this, "You have denied us the ability to make calls from our app.", Toast.LENGTH_LONG).show();
+                }
+            }
+            case MY_PERMISSIONS_REQUEST_READ_PHONE_STATE: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    Toast.makeText(this,"PERMISSION GRANTED", Toast.LENGTH_LONG).show();
+                }
+                else
+                {
+                    Toast.makeText(this,"NOOOO PERMISSION GRANTED", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -75,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    PhoneStateListener myPhoneStateListner = new PhoneStateListener() {
+    /*PhoneStateListener myPhoneStateListner = new PhoneStateListener() {
         @Override
         public void onCallStateChanged(int state, String incomingNumber) {
             super.onCallStateChanged(state, incomingNumber);
@@ -107,4 +125,5 @@ public class MainActivity extends AppCompatActivity {
         super.onStop();
         myTelephonyManager.listen(myPhoneStateListner, PhoneStateListener.LISTEN_NONE);
     }
+    */
 }

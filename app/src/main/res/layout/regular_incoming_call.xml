@@ -10,7 +10,7 @@
     android:minHeight="250dp"
     android:visibility="visible">
 
-    <ImageButton
+    <!--<ImageButton
         android:id="@+id/imageButton2"
         android:layout_width="65dp"
         android:layout_height="69dp"
@@ -73,5 +73,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.511"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" />-->
 </android.support.constraint.ConstraintLayout>
