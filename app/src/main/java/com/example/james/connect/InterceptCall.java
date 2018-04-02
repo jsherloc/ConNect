@@ -725,7 +725,7 @@ public class InterceptCall extends BroadcastReceiver {
                     country = "Unknown";
                     break countryFound;
             }
-        } else if (incomingNumber.substring(0, 3) == "810")  //Soviet Republic's protocol
+        } else if (incomingNumber.substring(0, 3).equals("810"))  //Soviet Republic's protocol
         {
             countryFound:
             switch (incomingNumber.substring(3, 4)) {
@@ -764,7 +764,7 @@ public class InterceptCall extends BroadcastReceiver {
                     break countryFound;
             }
 
-        } else if (incomingNumber.substring(0, 3) == "011")  //American protocol includes USA, Canada, Caribbean and Pacific regions
+        } else if (incomingNumber.substring(0, 3).equals("011"))  //American protocol includes USA, Canada, Caribbean and Pacific regions
         {
             countryFound:
             switch (incomingNumber.substring(3, 4)) {
@@ -882,7 +882,7 @@ public class InterceptCall extends BroadcastReceiver {
                     }
             }
         } else {
-            if (incomingNumber.substring(0, 3) == "002") // With some tweaking this can be aggregated to the "00"/"2" switch stmnt.
+            if (incomingNumber.substring(0, 3).equals("002")) // With some tweaking this can be aggregated to the "00"/"2" switch stmnt.
             {
                 countryFound:
                 switch (incomingNumber.substring(3, 6)) {
@@ -896,7 +896,7 @@ public class InterceptCall extends BroadcastReceiver {
                         country = "Unknown";
                         break countryFound;
                 }
-            } else if (incomingNumber.substring(0, 2) == "99")  // Rest of the world codes, our list may not be exhaustive
+            } else if (incomingNumber.substring(0, 2).equals("99"))  // Rest of the world codes, our list may not be exhaustive
             {
                 countryFound:
                 switch (incomingNumber.substring(2, 5)) {
@@ -910,7 +910,7 @@ public class InterceptCall extends BroadcastReceiver {
                         country = "Unknown";
                         break countryFound;
                 }
-            } else if (incomingNumber.substring(1, 2) != "0") {
+            } else if (incomingNumber.substring(1, 2).equals("0")==false) {
                 countryFound:
                 switch (incomingNumber.substring(1, 2)) {
                     case "1":
