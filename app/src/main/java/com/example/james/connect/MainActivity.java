@@ -2,8 +2,12 @@ package com.example.james.connect;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.DatabaseUtils;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,21 +21,41 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SQLiteDatabase contactsDatabase;
     private static final int MY_PERMISSIONS_REQUEST_CALL_PHONE = 3;
     private static final int MY_PERMISSIONS_REQUEST_READ_PHONE_STATE = 4;
     String telPhoneNo;
-    EditText phoneField;
+    EditText dialNumberField;
     private TelephonyManager myTelephonyManager;
+    EditText permittedCountryField;
+    ContactManagementDBHelper dbHelper;
+    String registeredNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = new ContactManagementDBHelper(this);
+        contactsDatabase = dbHelper.getWritableDatabase();
         myTelephonyManager = (TelephonyManager) getSystemService(getApplicationContext().TELEPHONY_SERVICE);
-        Button myButton = (Button) findViewById(R.id.button);
-        phoneField = (EditText) findViewById(R.id.editText);
+        if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
+        }
+        /*registeredNumber = myTelephonyManager.getLine1Number();
+        if(registeredNumber == null)
+        {
+            Toast.makeText(this, "Please register a phone number", Toast.LENGTH_LONG);
+        }else{
+            addYourNumberToDB();
+        }*/
+        Button callNumber = (Button) findViewById(R.id.button);
+        dialNumberField = (EditText) findViewById(R.id.editText);
+        Button addPermittedCountryButton = (Button) findViewById(R.id.button3);
+        permittedCountryField = (EditText) findViewById(R.id.PermittedCountry);
 
-        myButton.setOnClickListener(new View.OnClickListener() {
+        callNumber.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 makeCall();
@@ -42,10 +66,80 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.READ_PHONE_STATE},
                     MY_PERMISSIONS_REQUEST_READ_PHONE_STATE);
         }
+
+        addPermittedCountryButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addPermittedCountryToDB();
+            }
+        });
+    }
+
+    public boolean checkIsDataAlreadyInDB(String TableName, String dbfield, String fieldValue) {
+        String Query = "Select * from " + TableName + " where " + dbfield + " = " + fieldValue;
+        Cursor cursor = contactsDatabase.rawQuery(Query, null);
+        if(cursor.getCount() <= 0){
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
+    }
+
+    private void addPermittedCountryToDB()
+    {
+        //if(!yourNumberField.getText().toString().trim().equals("") || yourNumberField != null)
+        //{
+        //if the user enters a new phone number for their personal phone number we drop all tables that
+        //are relevant to the older number: user, blocked numbers, permitted countries.
+        //if(DatabaseUtils.queryNumEntries(contactsDatabase, ContactManagementContract.User.TABLE_NAME) > 0) {
+        //  dbHelper.onUpgrade(contactsDatabase, contactsDatabase.getVersion(), contactsDatabase.getVersion() + 1);
+        //}
+        //String number = yourNumberField.getText().toString();
+        String country = permittedCountryField.getText().toString().trim();
+        if(!checkIsDataAlreadyInDB(ContactManagementContract.PermittedCountries.TABLE_NAME, ContactManagementContract.PermittedCountries.COLUMN_COUNTRY_NAME, country)) {
+            ContentValues cv = new ContentValues();
+            cv.put(ContactManagementContract.PermittedCountries.COLUMN_COUNTRY_NAME, country);
+            contactsDatabase.insert(ContactManagementContract.PermittedCountries.TABLE_NAME, null, cv);
+            /*cv.clear();
+            Cursor cursor = contactsDatabase.rawQuery("SELECT ID FROM " + ContactManagementContract.PermittedCountries.TABLE_NAME +
+                    " WHERE " + ContactManagementContract.PermittedCountries.COLUMN_COUNTRY_NAME +
+                    " = '" + country + "';", null);
+            cursor.moveToFirst();
+            //There should only ever be one row as no country can be entered twice
+            int countryID = cursor.getInt(0);
+            cv.put(ContactManagementContract.User_PermittedCountries.COLUMN_COUNTRY_ID, countryID);
+            cursor = contactsDatabase.rawQuery("SELECT ID FROM " + ContactManagementContract.User.TABLE_NAME +
+                    " WHERE " + ContactManagementContract.User.COLUMN_USER_NUMBER +
+                    " = '" + registeredNumber + "';", null);
+            cursor.moveToFirst();
+            int userID = cursor.getInt(0);
+            cv.put(ContactManagementContract.User_PermittedCountries.COLUMN_USER_ID, userID);
+            contactsDatabase.insert(ContactManagementContract.User_PermittedCountries.TABLE_NAME, null, cv);*/
+        }
+        //}
+    }
+
+    private void addYourNumberToDB()
+    {
+        //if(!yourNumberField.getText().toString().trim().equals("") || yourNumberField != null)
+        //{
+            //if the user enters a new phone number for their personal phone number we drop all tables that
+            //are relevant to the older number: user, blocked numbers, permitted countries.
+            //if(DatabaseUtils.queryNumEntries(contactsDatabase, ContactManagementContract.User.TABLE_NAME) > 0) {
+              //  dbHelper.onUpgrade(contactsDatabase, contactsDatabase.getVersion(), contactsDatabase.getVersion() + 1);
+            //}
+            //String number = yourNumberField.getText().toString();
+        if(!checkIsDataAlreadyInDB(ContactManagementContract.User.TABLE_NAME, ContactManagementContract.User.COLUMN_USER_NUMBER, registeredNumber)) {
+            ContentValues cv = new ContentValues();
+            cv.put(ContactManagementContract.User.COLUMN_USER_NUMBER, registeredNumber);
+            contactsDatabase.insert(ContactManagementContract.User.TABLE_NAME, null, cv);
+        }
+        //}
     }
 
     private void makeCall(){
-        String phoneNo = phoneField.getText().toString();
+        String phoneNo = dialNumberField.getText().toString();
         if (!phoneNo.isEmpty()) {
             telPhoneNo = "tel:" + phoneNo;
             if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
@@ -92,38 +186,4 @@ public class MainActivity extends AppCompatActivity {
             // permissions this app might request.
         }
     }
-
-    /*PhoneStateListener myPhoneStateListner = new PhoneStateListener() {
-        @Override
-        public void onCallStateChanged(int state, String incomingNumber) {
-            super.onCallStateChanged(state, incomingNumber);
-            switch(state){
-                case TelephonyManager.CALL_STATE_OFFHOOK:
-                    //do what you want with incoming call number
-                    //insert the switch statement here
-                    //
-                    Toast.makeText(MainActivity.this, "CALL_STATE_OFFHOOK", Toast.LENGTH_LONG).show();
-                    break;
-                case TelephonyManager.CALL_STATE_IDLE:
-                    Toast.makeText(MainActivity.this, "CALL_STATE_IDLE", Toast.LENGTH_LONG).show();
-                    break;
-                case TelephonyManager.CALL_STATE_RINGING:
-                    Toast.makeText(MainActivity.this, "CALL_STATE_RINGING", Toast.LENGTH_LONG).show();
-                    break;
-            }
-        }
-    };
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        myTelephonyManager.listen(myPhoneStateListner, PhoneStateListener.LISTEN_CALL_STATE);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        myTelephonyManager.listen(myPhoneStateListner, PhoneStateListener.LISTEN_NONE);
-    }
-    */
 }
